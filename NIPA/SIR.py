@@ -14,13 +14,13 @@ class Compartment:
 
     @staticmethod
     def get_infected(country):
-        path = join(str(Path(os.getcwd()).parent), 'dataset', country, f'{country}.csv')
+        path = join(Path(os.getcwd()), 'dataset', country, f'{country}.csv')
         infected_df = pd.read_csv(path, index_col='regions')
         return infected_df
 
     @staticmethod
     def get_population(country):
-        path = join(str(Path(os.getcwd()).parent), 'dataset', country, 'population.csv')
+        path = join(Path(os.getcwd()), 'dataset', country, 'population.csv')
         population_df = pd.read_csv(path, index_col='regions')
         return population_df
 
@@ -33,10 +33,19 @@ class Compartment:
         return compartment_df.columns.to_list()
 
     @staticmethod
-    def get_curing_probs(curing_min=0.01, curing_max=0.1, size=50, seed=0):
-        np.random.seed(seed)
-        curing_probs = np.random.uniform(low=curing_min, high=curing_max, size=(size,))
-        return curing_probs
+    def get_curing_probs(regions, curing_min=0.01, curing_max=0.1, size=50):
+        curing_prob_df = pd.DataFrame(index=regions, columns=[i for i in range(len(regions))])
+        curing_prob_df = curing_prob_df.rename_axis('regions')
+
+        for i, region in enumerate(regions):
+            np.random.seed(i)
+            curing_probs = np.random.uniform(low=curing_min, high=curing_max, size=(size,))
+            curing_probs = np.sort(curing_probs)
+
+            for j in range(size):
+                curing_prob_df.loc[region, j] = curing_probs[j]
+
+        return curing_prob_df
 
     @staticmethod
     def get_I_compartment(country, n_train=None, duration=3):

@@ -85,7 +85,7 @@ class Lasso:
     def get_mse(self, Y_pred, y_test):
         b = self.b
         b[self.region_index] = 0
-        pb = self.p * mb
+        pb = self.p * b
         mse = mean_squared_error(Y_pred, y_test) + sum(pb)
 
         return mse
