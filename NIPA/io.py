@@ -1,4 +1,4 @@
-from NIPA.util import get_country_name
+from NIPA.datatype import get_country_name
 from os.path import join, abspath, dirname
 from pathlib import Path
 

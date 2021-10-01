@@ -1,3 +1,4 @@
+from NIPA.datatype import Country
 from NIPA.io import load_dataset, save_parameters, save_results, get_fig_path
 from NIPA.plotting import plot_multiple_graph
 
@@ -210,7 +211,7 @@ def predict(country, curing_df, B_df):
 
 
 if __name__ == '__main__':
-    country = 'italy'
+    country = Country.ITALY
     standardization = False
 
     dataset = load_dataset(country)
