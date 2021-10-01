@@ -1,4 +1,4 @@
-from NIPA.util import load_dataset, save_parameters, save_results, get_fig_path
+from NIPA.io import load_dataset, save_parameters, save_results, get_fig_path
 from NIPA.plotting import plot_multiple_graph
 
 from sklearn.preprocessing import StandardScaler
