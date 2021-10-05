@@ -1,4 +1,6 @@
-from NIPA.io import load_dataset, save_parameters, save_results, get_fig_path
+from NIPA.datatype import DatasetInfo
+from NIPA.io import load_dataset, save_parameters, save_results, get_fig_path, load_regions, save_setting
+from NIPA.loader import DataLoader
 from NIPA.plotting import plot_multiple_graph
 
 from sklearn.preprocessing import StandardScaler
@@ -114,8 +116,7 @@ def network_inference(curing_prob, vector, I_df, standardization):
     return region_B, region_mse
 
 
-def train_nipa(case_name, standardization):
-    dataset = load_dataset(case_name)
+def train_nipa(dataset, standardization):
     train_I_df = dataset['train']
     regions = dataset['regions']
 
@@ -158,12 +159,10 @@ def train_nipa(case_name, standardization):
         print(f'B values: {B_list[min_index]}')
         print()
 
-    save_parameters(case_name, curing_df, B_df)
     return curing_df, B_df
 
 
-def predict(case_name, curing_df, B_df):
-    dataset = load_dataset(case_name)
+def predict(dataset, curing_df, B_df):
     train_I_df = dataset['train']
     train_R_df = get_R_df(train_I_df, curing_df)
     test_I_df = dataset['test']
@@ -204,19 +203,34 @@ def predict(case_name, curing_df, B_df):
 
     pred_I_df = pred_I_df.iloc[:, 1:]
     pred_R_df = pred_R_df.iloc[:, 1:]
-
-    save_results(cocase_nameuntry, pred_I_df, pred_R_df)
     return pred_I_df, pred_R_df
 
 
 if __name__ == '__main__':
-    case_name = 'Italy'
+    case_name = 'Italy_c36988'
     standardization = False
 
     dataset = load_dataset(case_name)
-    curing_df, B_df = train_nipa(case_name, standardization)
-    pred_I_df, pred_R_df = predict(case_name, curing_df, B_df)
+    regions = load_regions(case_name)
+    data_info = DatasetInfo(x_frames=15, y_frames=3,
+                            test_start='201230', test_end='210306')
+    save_setting(data_info, 'data_info')
 
-    data = [pred_I_df, dataset['test']]
-    names = ['pred', 'true']
-    plot_multiple_graph(data, names, fig_path=get_fig_path(case_name), figsize=(15, 20))
+    loader = DataLoader(dataset['I'], regions, data_info)
+
+    for i in range(len(loader)):
+        print(f'{i}th dataset===============================')
+        train_I, test_I = loader[i]
+        dataset.update({'train': train_I})
+        dataset.update({'test': test_I})
+
+        curing_df, B_df = train_nipa(dataset, standardization)
+        save_parameters(data_info, case_name, i, curing_df, B_df)
+        pred_I_df, pred_R_df = predict(dataset, curing_df, B_df)
+        save_results(data_info, case_name, i, pred_I_df, pred_R_df)
+
+        data = [pred_I_df, dataset['test']]
+        names = ['pred', 'true']
+        plot_multiple_graph(data, names, fig_path=get_fig_path(data_info, case_name, i),
+                            figsize=(15, 20), plot=False)
+        print()

@@ -2,7 +2,8 @@ import matplotlib.ticker as mticker
 import matplotlib.pyplot as plt
 
 
-def plot_multiple_graph(data, names=None, xlabel=None, ylabel=None, fig_path=None, n_cols=2, xticks=20, figsize=(15, 60)):
+def plot_multiple_graph(data, names=None, xlabel=None, ylabel=None, fig_path=None,
+                        n_cols=2, xticks=20, figsize=(15, 60), plot=True):
     regions = data[0].index.to_list()
     dates = data[0].columns.tolist()
 
@@ -33,5 +34,6 @@ def plot_multiple_graph(data, names=None, xlabel=None, ylabel=None, fig_path=Non
         fig.savefig(fig_path)
         print(f'saving plotted graph to {fig_path}')
 
-    plt.show()
+    if plot:
+        plt.show()
     return fig, axs
