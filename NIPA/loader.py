@@ -2,14 +2,14 @@ from datetime import timedelta
 
 
 class DataLoader:
-    def __init__(self, I_df, regions, data_info):
-        self.regions = regions
+    def __init__(self, data_info, dataset):
         self.test_start = data_info.test_start
         self.test_end = data_info.test_end
         self.x_frames = data_info.x_frames
         self.y_frames = data_info.y_frames
 
-        self.initiate(I_df)
+        self.regions = dataset['regions']
+        self.initiate(dataset['I'])
 
     def __len__(self):
         return self.len - (self.x_frames + self.y_frames) + 1
@@ -26,5 +26,6 @@ class DataLoader:
 
         x = data.iloc[:, :self.x_frames]
         y = data.iloc[:, self.x_frames:]
+        test_dates = y.columns.to_list()
 
-        return x, y
+        return x, y, test_dates
