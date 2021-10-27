@@ -2,23 +2,28 @@
 
 ### Dataset
 
-We have preprocessed COVID-19 dataset of US, Italy, Chana, and India. The preprocessed dataset is committed on [here](dataset/). Raw dataset of each country can be found here: 
-
-- US: [JHU CSSE COVID-19 Dataset](https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data), [link](https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/)
-- Italy: [Dati COVID-19 Italia](https://github.com/pcm-dpc/COVID-19), [link](https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-regioni/dpc-covid19-ita-regioni.csv)
-- China: [JHU CSSE COVID-19 Dataset](https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data), [link](https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/)
-- Hubei
-  - 2020-01-29 ~ 2020-02-14: [Hubei](http://www.hubei.gov.cn), [link](http://en.hubei.gov.cn/special/coronavirus_2019/update_2019ncov/)
-  - [NIPA paper](https://appliednetsci.springeropen.com/articles/10.1007/s41109-020-00274-2#Sec11) [Additional file 2](https://static-content.springer.com/esm/art%3A10.1007%2Fs41109-020-00274-2/MediaObjects/41109_2020_274_MOESM2_ESM.xlsx)
-- India: [COVID19-India API](https://github.com/covid19india/api), [link](https://api.covid19india.org/csv/latest/states.csv)
+Dataset for this repository can be downloaded [here](https://github.com/DVL-Sejong/COVID_DataProcessor). You must download data and preprocess the data for the model. Dataset for the model should be under `\dataset\country_name`.
 
 
 
 ### NIPA
 
-to be updated
+```
+$ git clone https://github.com/DVL-Sejong/NIPA.git
+$ cd NIPA
+$ python main.py
+```
+
+- Arguments
+  - country:  Italy, India, US, China are available
+  - standardization: if True, standardize dataset while inference network. We recommend False
+  - x_frames: Number of x frames for generating dataset
+  - y_frames: Number of y frames for generating dataset
+- Results are saved under `results\country_name\` and `settiings\`
 
 
+
+### Citation
 
 NIPA code is based on this paper:
 
@@ -29,7 +34,7 @@ NIPA code is based on this paper:
   journal={Applied Network Science},
   volume={5},
   number={1},
-  pages={1--11},
+  pages={1-11},
   year={2020},
   publisher={SpringerOpen}
 }
