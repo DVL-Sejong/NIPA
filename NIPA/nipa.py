@@ -1,8 +1,3 @@
-from NIPA.datatype import DatasetInfo, Country, PreprocessInfo
-from NIPA.io import load_dataset, save_parameters, save_results, save_setting, load_links
-from NIPA.util import get_predict_period_from_dataset
-from NIPA.loader import DataLoader
-
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LassoCV
 from sklearn.metrics import mean_squared_error
@@ -204,46 +199,3 @@ def predict(dataset, curing_df, B_df):
     pred_I_df = pred_I_df.iloc[:, 1:]
     pred_R_df = pred_R_df.iloc[:, 1:]
     return pred_I_df, pred_R_df
-
-
-if __name__ == '__main__':
-    country = Country.ITALY
-    link_df = load_links(country)
-    standardization = False
-
-    sird_info = PreprocessInfo(country=country, start=link_df['start_date'], end=link_df['end_date'],
-                               increase=True, daily=True, remove_zero=True,
-                               smoothing=True, window=5, divide=True)
-    save_setting(sird_info, 'sird_info')
-
-    dataset = load_dataset(country, sird_info.get_hash())
-
-    x_frames = 15
-    y_frames = 3
-    predict_dates = get_predict_period_from_dataset(dataset, x_frames, y_frames)
-    data_info = DatasetInfo(x_frames=x_frames, y_frames=y_frames, test_start=predict_dates[-5], test_end=predict_dates[-1])
-    save_setting(data_info, 'data_info')
-
-    loader = DataLoader(data_info, dataset)
-
-    train_I, test_I, test_dates = loader[0]
-    regions = train_I.index.tolist()
-    I_df = pd.DataFrame(index=regions, columns=predict_dates)
-    I_df.index.name = 'regions'
-    R_df = pd.DataFrame(index=regions, columns=predict_dates)
-    R_df.index.name = 'regions'
-
-    for i in range(len(loader)):
-        train_I, test_I, test_dates = loader[i]
-        dataset.update({'train': train_I})
-        dataset.update({'test': test_I})
-
-        print(f'Predicting {test_dates[0]} to {test_dates[-1]} ===============================')
-        curing_df, B_df = train_nipa(dataset, standardization)
-        save_parameters(country, sird_info, data_info, test_dates[0], curing_df, B_df)
-        pred_I_df, pred_R_df = predict(dataset, curing_df, B_df)
-        I_df.loc[:, test_dates[0]] = pred_I_df.loc[:, test_dates[0]]
-        R_df.loc[:, test_dates[0]] = pred_R_df.loc[:, test_dates[0]]
-        save_results(country, sird_info, data_info, test_dates[0], pred_I_df, pred_R_df)
-
-    save_results(country, sird_info, data_info, None, I_df, R_df)
