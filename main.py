@@ -37,7 +37,7 @@ def get_args():
 
 
 def main(args):
-    country = Country(args.country.upper())
+    country = Country[args.country.upper()]
     link_df = load_links(country)
     sird_info = PreprocessInfo(country=country, start=link_df['start_date'], end=link_df['end_date'],
                                increase=True, daily=True, remove_zero=True,
